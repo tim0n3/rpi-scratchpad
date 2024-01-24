@@ -67,7 +67,7 @@ file_path="/sys/class/thermal/thermal_zone0/temp"
 check_file_existence "$file_path"
 
 # Read CPU temperature
-local cpu=$(<"$file_path")
+cpu=$(<"$file_path")
 
 # Output information
 echo "$(date '+%Y-%m-%d %H:%M:%S') @ $(hostname)"
