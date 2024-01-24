@@ -62,17 +62,21 @@ check_file_existence() {
 
 # Usage example with proper redirections
 file_path="/sys/class/thermal/thermal_zone0/temp"
-gpu_file_path="/opt/vc/bin/vcgencmd" 
+gpu_file_path=$(which vcgencmd) 
 
 # Check if the file exists before attempting to read its contents
 check_file_existence "$file_path"
-check_file_existence "$gpu_file_path"
+check_file_existence "$gpu_file_path" || pip3 install setuptools && pip3 install vcgencmd || exit_code
 
 # Read CPU temperature
 cpu=$(<"$file_path")
 
-# Testing GPU utility... Probably not gonna make it into the final product.
-# ... but will test on an old RPI pre-Buster install.
+# Testing GPU utility... Probably not gonna make it into the \
+# final product but will test on an old RPI pre-Buster install.
+# Looks like you can install command-line utility \
+# that allows you to communicate with the VideoCore GPU.
+# You can install it with pip3 install setuptools
+# and pip3 install vcgencmd
 # GPU temperature util
 gpu=$("$gpu_file_path")
 
