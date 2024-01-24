@@ -66,7 +66,7 @@ gpu_file_path=$(which vcgencmd)
 
 # Check if the file exists before attempting to read its contents
 check_file_existence "$file_path"
-check_file_existence "$gpu_file_path" || pip3 install setuptools && pip3 install vcgencmd || exit_code
+check_file_existence "$gpu_file_path" 
 
 # Read CPU temperature
 cpu=$(<"$file_path")
@@ -75,13 +75,13 @@ cpu=$(<"$file_path")
 # final product but will test on an old RPI pre-Buster install.
 # Looks like you can install command-line utility \
 # that allows you to communicate with the VideoCore GPU.
-# You can install it with pip3 install setuptools
+# You can install it with pip3 install setuptools \
 # and pip3 install vcgencmd
 # GPU temperature util
-gpu=$("$gpu_file_path")
+gpu=$(vcgencmd measure_temp)
 
 # Output information
 echo "$(date '+%Y-%m-%d %H:%M:%S') @ $(hostname)"
 echo "-------------------------------------------"
 echo "CPU => $((cpu/1000)) C" || exit_code
-echo "GPU => $((gpu measure_temp))" || exit_code
+echo "GPU => $gpu" || exit_code
