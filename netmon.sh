@@ -36,9 +36,9 @@ check_internet() {
 			log error "Ping command failed (exit code: $exit_code) - Check that iputils-ping is installed and you are using the correct interface." "$RED"
 		fi
 		log error "Ping command failed (exit code: $exit_code) on interface $iface." "$RED"
-		log debug "Troubleshooting steps:" "$BLUE"
-		log debug "- Check if 'iputils-ping' is installed: sudo apt install iputils-ping (if using Debian/Ubuntu)" "$BLUE"
-		log debug "- Verify you are using the correct interface name (e.g., wlan0, eth0)." "$BLUE"
+		log warning "Troubleshooting steps:" "$YELLOW"
+		log warning "- Check if 'iputils-ping' is installed: sudo apt install iputils-ping (if using Debian/Ubuntu)" "$YELLOW"
+		log warning "- Verify you are using the correct interface name (e.g., wlan0, eth0)." "$YELLOW"
 		return 1
 	fi
 }
@@ -71,6 +71,6 @@ main() {
 }
 
 
-trap 'log debug "Script terminated." "$BLUE"; exit 0' SIGINT SIGTERM
+trap 'log warning "Script terminated." "$YELLOW"; exit 0' SIGINT SIGTERM
 
 main "$@"
