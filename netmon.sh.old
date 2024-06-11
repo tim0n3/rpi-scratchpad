@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+LOG_DIR="/var/log/internet"
+DEBUG_LOG="/var/log/internet_debug.log"
+ERROR_LOG="/var/log/internet_error.log"
+SUCCESS_LOG="/var/log/internet_success.log"
+
+log_debug() {
+	local level="$1"
+	local message="$2"
+	echo "$(date +'%Y-%m-%d %H:%M:%S') [$level]: [DEBUG]: $messasge" >> "$LOG_DIR/$level.log" 
+}
+
+log_error() {
+	local level="$1"
+	local message="$2"
+	echo "$(date +'%Y-%m-%d %H:%M:%S') [$level]: [ERROR]: $messasge" >> "$LOG_DIR/$level.log" 
+}
+
+log_success() {
+	local level="$1"
+	local message="$2"
+	echo "$(date +'%Y-%m-%d %H:%M:%S') [$level]: [SUCCESS]: $messasge" >> "$DEBUG_LOG" 
+}
+
+check_internet() {
+	local iface="wlan0"
+	local target="8.8.8.8"
+	local count=4
+	
+	if ping -I "$iface" -c "$count" "$target" &> /dev/null; then
+		log_success "Internet connectivity on $iface is working fine."
+		return 0
+	else
+		local exit_code=$?
+		if [[ $exit_code -eq 1 ]]; then
+			log_error "Internet connectivity on $iface is down. Restarting networking service."
+			systemctl restart networking.service &>> "$ERROR_LOG"
+		else
+			log_error "Ping command failed 9exit code: $exit_code) - Check in net-tools or iputils is installed"
+		fi
+		return 1
+	fi
+}
+
+check_all_interfaces() {
+	local interfaces=(wlano eth0)
+	for iface in "${interfaces[@]}"; do
+		check_internet "$iface"
+	done
+}
+
+# Single check
+#if check_internet; then
+#	log_debug "Internet connectivity check passed." || log_error "Script failed at step 1: Before condition is true."
+#else
+#	log_debug "Internet connectivity check failed." || log_error "Script failed at Step 2: After condition is true but before condition is false."
+#fi
+
+while true; do
+	check_all_interfaces
+	sleep 60
+done
+
+#exit 0
