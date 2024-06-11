@@ -1,0 +1,14 @@
+[Unit]
+Description=internet_monitor
+After=network.target
+
+[Service]
+Type=forking
+KillMode=none
+User=root
+ExecStart=/usr/bin/screen -d -m -fa -S netstatmon /root/netmon.sh
+ExecStop=/usr/bin/screen -X -S netstatmon quit
+WorkingDirectory=/root/
+
+[Install]
+WantedBy=multi-user.target

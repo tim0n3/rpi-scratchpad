@@ -12,52 +12,51 @@ error_log="error.log"
 
 # Function to redirect standard error (stderr) to a specified log file with timestamps and "[ERROR]" prefix.
 log_stderr() {
-  exec 2> >(while IFS= read -r line; do
-               echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] $line" >> "$error_log"
-             done)
+	exec 2> >(while IFS= read -r line; do
+	echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] $line" >> "$error_log"
+done)
 }
 
 # Function to redirect standard output (stdout) to a specified log file with timestamps and "[INFO]" prefix.
 log_stdout() {
-  exec > >(while IFS= read -r line; do
-              echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $line" >> "$stdout_log"
-            done)
+	exec > >(while IFS= read -r line; do
+	echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $line" >> "$stdout_log"
+done)
 }
 
 # Function to capture the exit code of the last command, log it, and print a stack trace before exiting.
 exit_code() {
-  local exit_code=$?
-  
-  if [ $exit_code -ne 0 ]; then
-    # Redirect stderr to stdout for consistent logging.
-    exec 2>&1
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] Exit code: $exit_code" >> "$error_log"
-    
-    # Print a stack trace or debug trace.
-    echo "Stack trace:"
-    local frame=0
-    while caller $frame; do
-      ((frame++))
-    done
-    
-    # Exit with the captured exit code.
-    exit $exit_code
-  fi
+	local exit_code=$?
+
+	if [ $exit_code -ne 0 ]; then
+		# Redirect stderr to stdout for consistent logging.
+		exec 2>&1
+		echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] Exit code: $exit_code" >> "$error_log"
+
+		# Print a stack trace or debug trace.
+		echo "Stack trace:"
+		local frame=0
+		while caller $frame; do
+			((frame++))
+		done
+		# Exit with the captured exit code.
+		exit $exit_code
+	fi
 }
 
 # Function to test if a file exists, log errors, and handle exit codes accordingly.
 check_file_existence() {
-  local file_path="$1"
+	local file_path="$1"
 
-  if [ -e "$file_path" ]; then
-    # If the file exists, redirect stdout to the specified log file.
-    log_stdout
-  else
-    # If the file doesn't exist, redirect stderr to the specified log file, log an error, and exit with an error code.
-    log_stderr
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] File not found: $file_path" >> "$stderr_log"
-    exit_code
-  fi
+	if [ -e "$file_path" ]; then
+		# If the file exists, redirect stdout to the specified log file.
+		log_stdout
+	else
+		# If the file doesn't exist, redirect stderr to the specified log file, log an error, and exit with an error code.
+		log_stderr
+		echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] File not found: $file_path" >> "$stderr_log"
+		exit_code
+	fi
 }
 
 # Usage example with proper redirections
