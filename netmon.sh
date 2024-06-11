@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+#set -x
 
 LOG_DIR="/home/tim/usb01/log/internet"
 mkdir -p "$LOG_DIR"  
