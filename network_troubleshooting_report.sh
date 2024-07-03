@@ -110,12 +110,23 @@ check_arp_cache() {
   fi
 }
 
-check_ping
-check_dns_resolution
-check_traceroute
-check_interface_status
-check_routing_table
-check_arp_cache
+export -f log log_error check_ping check_dns_resolution check_traceroute check_interface_status check_routing_table check_arp_cache
+export REPORT_FILE ERROR_FILE
+
+if command -v parallel &> /dev/null; then
+  log "GNU Parallel detected. Using parallel execution."
+  parallel ::: check_ping check_dns_resolution check_traceroute check_interface_status check_routing_table check_arp_cache
+else
+  log "GNU Parallel not detected. Using background jobs."
+  check_ping &
+  check_dns_resolution &
+  check_traceroute &
+  check_interface_status &
+  check_routing_table &
+  check_arp_cache &
+
+  wait
+fi
 
 log "\nNetwork troubleshooting completed. Check $REPORT_FILE for details and $ERROR_FILE for errors."
 
