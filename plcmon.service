@@ -1,0 +1,14 @@
+[Unit]
+Description=plc_monitor
+After=network.target
+
+[Service]
+Type=forking
+KillMode=none
+User=root
+ExecStart=/usr/bin/screen -d -m -fa -S plcmon /root/plcmon.sh
+ExecStop=/usr/bin/screen -X -S plcmon quit
+WorkingDirectory=/root/
+
+[Install]
+WantedBy=multi-user.target
